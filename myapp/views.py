@@ -15,10 +15,8 @@ from .models import Customer, Order, OrderItem, Product, ShippingAddress, Feedba
 def create_customer(sender, instance, created, **kwargs):
     if created:  # Only create the customer if the user was newly created
         customer = Customer.objects.create(user=instance)
-        # Populate the customer fields with the username and email
-        customer.username = instance.username
-        customer.name = instance.username
-        customer.email = instance.email
+        customer.name = instance.username  # Set the name to the username
+        customer.email = instance.email    # Set the email to the user's email
         customer.save()
 
 @receiver(post_save, sender=User)
@@ -30,7 +28,8 @@ def save_customer(sender, instance, **kwargs):
 
 def home(request):
     if request.user.is_authenticated:
-        customer = request.user.customer
+        # Ensure the customer exists for the logged-in user
+        customer, created = Customer.objects.get_or_create(user=request.user)
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         cartItems = order.get_cart_items  # Get the cart item count
     else:
@@ -87,7 +86,7 @@ def logout_user(request):
 
 def aboutus(request):
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer, created = Customer.objects.get_or_create(user=request.user)
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         cartItems = order.get_cart_items  # Get the cart item count
     else:
@@ -98,13 +97,21 @@ def aboutus(request):
     }
     return render(request, 'aboutus.html', context)
 
-
-# My orders view
 def myorder(request):
     if request.user.is_authenticated:
-        customer = request.user.customer
-        orders = Order.objects.filter(customer=customer, complete=True)  # Get all confirmed orders
-        cartItems = customer.order_set.filter(complete=False).first().get_cart_items if orders else 0
+        customer, created = Customer.objects.get_or_create(user=request.user)
+        
+        # Get the customer's order (incomplete or completed) or return None if it doesn't exist
+        order = Order.objects.filter(customer=customer, complete=False).first()
+        
+        # If an order exists, use its cart items, otherwise set cartItems to 0
+        if order:
+            cartItems = order.get_cart_items
+        else:
+            cartItems = 0
+        
+        # Retrieve the user's completed orders
+        orders = Order.objects.filter(customer=customer, complete=True)
     else:
         orders = []
         cartItems = 0  # If user is not authenticated, cartItems should be 0
@@ -115,38 +122,10 @@ def myorder(request):
     }
     return render(request, 'myorder.html', context)
 
-# Products view (this page lists products and cart items)
-def products(request):
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        items = order.orderitem_set.all()
-        cartItems = order.get_cart_items
-    else:
-        items = []
-        order = {'get_cart_total': 0, 'get_cart_items': 0}
-        cartItems = order['get_cart_items']
 
-    # Get the search query from the GET parameters (if any)
-    search_query = request.GET.get('search', '')
-    if search_query:
-        # Filter products based on the search query (case-insensitive partial match)
-        products = Product.objects.filter(name__icontains=search_query)
-    else:
-        # If no search query, show all products
-        products = Product.objects.all()
-
-    context = {
-        'products': products,
-        'cartItems': cartItems,
-        'search_query': search_query  # Optionally, pass the search query back to the template
-    }
-    return render(request, 'products.html', context)
-
-# Cart view (this page shows the user's cart)
 def cart(request):
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer, created = Customer.objects.get_or_create(user=request.user)
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
@@ -158,10 +137,10 @@ def cart(request):
     context = {'items': items, 'order': order, 'cartItems': cartItems}
     return render(request, 'cart.html', context)
 
-# Checkout view (this page is where users review and confirm their orders)
+
 def checkout(request):
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer, created = Customer.objects.get_or_create(user=request.user)
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
@@ -172,6 +151,7 @@ def checkout(request):
 
     context = {'items': items, 'order': order, 'cartItems': cartItems}
     return render(request, 'checkout.html', context)
+
 
 # Update cart items (this will handle add/remove items from the cart)
 def updateItem(request):
@@ -197,13 +177,12 @@ def updateItem(request):
 
     return JsonResponse('Item was added', safe=False)
 
-# Process the order (Confirm and save the shipping details)
 def processOrder(request):
     transaction_id = datetime.datetime.now().timestamp()
     data = json.loads(request.body)
 
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer, created = Customer.objects.get_or_create(user=request.user)
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         total = float(data['form']['total'])
         order.transaction_id = transaction_id
@@ -228,6 +207,34 @@ def processOrder(request):
 
     else:
         return JsonResponse({'error': 'User is not logged in'}, safe=False)
+    
+def products(request):
+    if request.user.is_authenticated:
+        customer, created = Customer.objects.get_or_create(user=request.user)
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+    else:
+        items = []
+        order = {'get_cart_total': 0, 'get_cart_items': 0}
+        cartItems = order['get_cart_items']
+
+    # Get the search query from the GET parameters (if any)
+    search_query = request.GET.get('search', '')
+    if search_query:
+        # Filter products based on the search query (case-insensitive partial match)
+        products = Product.objects.filter(name__icontains=search_query)
+    else:
+        # If no search query, show all products
+        products = Product.objects.all()
+
+    context = {
+        'products': products,
+        'cartItems': cartItems,
+        'search_query': search_query  # Optionally, pass the search query back to the template
+    }
+    return render(request, 'products.html', context)
+
 
 def product_list(request):
     search_query = request.GET.get('search', '')  # Get the search query from the URL parameter

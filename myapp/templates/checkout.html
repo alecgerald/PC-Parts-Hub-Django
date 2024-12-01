@@ -97,8 +97,7 @@
             .then((response) => response.json())
             .then((data) => {
                 console.log('Success:', data);
-                alert('Order placed successfully!');
-                window.location.href = "{% url 'products' %}";
+                window.location.href = "{% url 'myorder' %}";
             });
         });
     </script>
