@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from PIL import Image
 
 
-
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200, null= True)
@@ -96,3 +95,12 @@ class ShippingAddress(models.Model):
 
     def __str__(self):
         return self.address
+    
+class Feedback(models.Model):
+    customer = models.ForeignKey('Customer', on_delete=models.CASCADE, related_name='feedbacks')
+    message = models.TextField()
+    screenshots = models.ImageField(upload_to='feedback_screenshots/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback from {self.customer.name} at {self.created_at}"

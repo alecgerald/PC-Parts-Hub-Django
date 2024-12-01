@@ -8,7 +8,7 @@ from django.dispatch import receiver
 import json
 import datetime
 
-from .models import Customer, Order, OrderItem, Product, ShippingAddress
+from .models import Customer, Order, OrderItem, Product, ShippingAddress, Feedback
 
 
 @receiver(post_save, sender=User)
@@ -227,3 +227,22 @@ def product_list(request):
         products = Product.objects.all()  # Show all products if no search query is provided
 
     return render(request, 'product_list.html', {'products': products})
+
+def feedback(request):
+    if request.method == 'POST':
+        customer = request.user.customer
+        message = request.POST['message']
+        screenshots = request.FILES.getlist('screenshots')  # Handles multiple file uploads
+
+        # Create a new feedback entry
+        feedback_entry = Feedback.objects.create(customer=customer, message=message)
+
+        # Save each uploaded screenshot
+        for file in screenshots:
+            feedback_entry.screenshots.save(file.name, file)
+
+        feedback_entry.save()
+        messages.success(request, 'Thank you for your feedback!')
+        return redirect('feedback')
+
+    return render(request, 'feedback.html')

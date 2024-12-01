@@ -11,6 +11,7 @@
                 </div>
                 <div class="card-body p-4">
                     <p class="text-muted text-center mb-4">Help us improve by sharing your thoughts. Your feedback is essential to us!</p>
+<<<<<<< Updated upstream
                     <form id="feedback-form">
                         <div class="mb-3">
                             <label for="name" class="form-label fw-semibold">Name</label>
@@ -27,6 +28,20 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Upload Screenshots (Optional)</label>
                             <input class="form-control form-control-lg" type="file" multiple accept=".jpg, .jpeg, .png, .gif">
+=======
+                    <form id="feedback-form" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea required class="form-control form-control-lg" id="message" name="message" rows="4" placeholder="Your feedback or suggestions..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Upload Screenshots (Optional)</label>
+                            <!-- Custom file input -->
+                            <div class="custom-file-container">
+                                <input class="form-control form-control-lg" type="file" name="screenshots" multiple accept=".jpg, .jpeg, .png, .gif">
+                            </div>
+>>>>>>> Stashed changes
                         </div>
                         <div id="form-alert" class="alert d-none mt-3" role="alert"></div>
                         <button id="form-button" class="btn btn-gradient btn-lg w-100 mt-3" type="submit">Submit Feedback</button>
@@ -39,6 +54,7 @@
 
 <style>
     .bg-gradient-primary {
+<<<<<<< Updated upstream
         background: linear-gradient(90deg, #4e73df, #1cc88a);
         color: #fff;
     }
@@ -63,12 +79,93 @@
     }
 </style>
 
+=======
+        background: linear-gradient(90deg, #007bff, #00c6ff);
+        color: #fff;
+    }
+
+    .btn-gradient {
+        background: linear-gradient(90deg, #00c6ff, #007bff);
+        color: white;
+        border: none;
+    }
+
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #00a3cc, #005f8c);
+    }
+
+    .form-control-lg {
+        font-size: 1rem;
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: none;
+    }
+
+    .fw-semibold {
+        font-weight: 600;
+    }
+
+    .fw-bold {
+        font-weight: 700;
+    }
+
+    .card {
+        border: none;
+        border-radius: 8px;
+    }
+
+    .custom-file-container {
+        position: relative;
+    }
+
+    .custom-file-container input[type="file"] {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .custom-file-container::before {
+        content: 'Choose Files';
+        display: block;
+        padding: 10px 15px;
+        background: #e2e8f0;
+        color: #333;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.3s ease;
+    }
+
+    .custom-file-container input[type="file"]:focus + .custom-file-container::before,
+    .custom-file-container input[type="file"]:hover + .custom-file-container::before {
+        background-color: #ccc;
+    }
+
+    .custom-file-container input[type="file"]:valid + .custom-file-container::before {
+        content: 'File Selected';
+        background: #a5d8ff;
+    }
+
+    .alert {
+        font-size: 1rem;
+    }
+</style>
+
+>>>>>>> Stashed changes
 <script>
     const form = document.getElementById('feedback-form');
     const alertBox = document.getElementById('form-alert');
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
+<<<<<<< Updated upstream
         alertBox.classList.remove('d-none', 'alert-danger', 'alert-success');
         alertBox.classList.add('alert-primary');
         alertBox.textContent = 'Submitting...';
@@ -80,6 +177,37 @@
             alertBox.textContent = 'Thank you for your feedback! We appreciate your input.';
             form.reset();
         }, 1000);
+=======
+        const formData = new FormData(form);
+        alertBox.classList.remove('d-none', 'alert-danger', 'alert-success');
+        alertBox.classList.add('alert-primary');
+        alertBox.textContent = 'Submitting...';
+
+        fetch("{% url 'feedback' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alertBox.classList.remove('alert-primary');
+            if (data.success) {
+                alertBox.classList.add('alert-success');
+                alertBox.textContent = 'Thank you for your feedback! We appreciate your input.';
+                form.reset();
+            } else {
+                alertBox.classList.add('alert-danger');
+                alertBox.textContent = 'An error occurred. Please try again later.';
+            }
+        })
+        .catch(() => {
+            alertBox.classList.remove('alert-primary');
+            alertBox.classList.add('alert-danger');
+            alertBox.textContent = 'An error occurred. Please try again later.';
+        });
+>>>>>>> Stashed changes
     });
 </script>
 {% endblock content %}
