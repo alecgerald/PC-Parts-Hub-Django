@@ -28,9 +28,16 @@ def save_customer(sender, instance, **kwargs):
     except Customer.DoesNotExist:
         pass  # No action if customer does not exist
 
-# Home view
 def home(request):
-    return render(request, 'home.html')
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        cartItems = order.get_cart_items  # Get the cart item count
+    else:
+        cartItems = 0  # If user is not authenticated, set cart items to 0
+
+    return render(request, 'home.html', {'cartItems': cartItems})
+
 
 # Login view
 def login(request):
@@ -78,10 +85,19 @@ def logout_user(request):
     logout(request)  # Logs out the current user
     return redirect('login')  # Redirects to the home page after logging out
 
-# About us view
 def aboutus(request):
-    context = {}
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        cartItems = order.get_cart_items  # Get the cart item count
+    else:
+        cartItems = 0  # If user is not authenticated, set cart items to 0
+
+    context = {
+        'cartItems': cartItems
+    }
     return render(request, 'aboutus.html', context)
+
 
 # My orders view
 def myorder(request):
@@ -98,12 +114,6 @@ def myorder(request):
         'cartItems': cartItems,
     }
     return render(request, 'myorder.html', context)
-
-
-# Feedback view
-def feedback(request):
-    context = {}
-    return render(request, 'feedback.html', context)
 
 # Products view (this page lists products and cart items)
 def products(request):
@@ -229,20 +239,18 @@ def product_list(request):
     return render(request, 'product_list.html', {'products': products})
 
 def feedback(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated:
         customer = request.user.customer
-        message = request.POST['message']
-        screenshots = request.FILES.getlist('screenshots')  # Handles multiple file uploads
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        cartItems = order.get_cart_items  # Get the cart item count
+        items = order.orderitem_set.all()  # Get all the items in the cart
+    else:
+        cartItems = 0  # If the user is not authenticated
+        items = []
 
-        # Create a new feedback entry
-        feedback_entry = Feedback.objects.create(customer=customer, message=message)
+    context = {
+        'cartItems': cartItems,
+        'items': items  # Pass cart items to the template
+    }
+    return render(request, 'feedback.html', context)
 
-        # Save each uploaded screenshot
-        for file in screenshots:
-            feedback_entry.screenshots.save(file.name, file)
-
-        feedback_entry.save()
-        messages.success(request, 'Thank you for your feedback!')
-        return redirect('feedback')
-
-    return render(request, 'feedback.html')

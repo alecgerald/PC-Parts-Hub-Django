@@ -11,24 +11,6 @@
                 </div>
                 <div class="card-body p-4">
                     <p class="text-muted text-center mb-4">Help us improve by sharing your thoughts. Your feedback is essential to us!</p>
-<<<<<<< Updated upstream
-                    <form id="feedback-form">
-                        <div class="mb-3">
-                            <label for="name" class="form-label fw-semibold">Name</label>
-                            <input required class="form-control form-control-lg" type="text" id="name" name="name" placeholder="Enter your name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label fw-semibold">Email</label>
-                            <input required class="form-control form-control-lg" type="email" id="email" name="email" placeholder="Enter your email">
-                        </div>
-                        <div class="mb-3">
-                            <label for="message" class="form-label fw-semibold">Message</label>
-                            <textarea required class="form-control form-control-lg" id="message" name="message" rows="4" placeholder="Your feedback or suggestions..."></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Upload Screenshots (Optional)</label>
-                            <input class="form-control form-control-lg" type="file" multiple accept=".jpg, .jpeg, .png, .gif">
-=======
                     <form id="feedback-form" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="mb-3">
@@ -41,7 +23,6 @@
                             <div class="custom-file-container">
                                 <input class="form-control form-control-lg" type="file" name="screenshots" multiple accept=".jpg, .jpeg, .png, .gif">
                             </div>
->>>>>>> Stashed changes
                         </div>
                         <div id="form-alert" class="alert d-none mt-3" role="alert"></div>
                         <button id="form-button" class="btn btn-gradient btn-lg w-100 mt-3" type="submit">Submit Feedback</button>
@@ -54,32 +35,6 @@
 
 <style>
     .bg-gradient-primary {
-<<<<<<< Updated upstream
-        background: linear-gradient(90deg, #4e73df, #1cc88a);
-        color: #fff;
-    }
-    .btn-gradient {
-        background: linear-gradient(90deg, #1cc88a, #36b9cc);
-        color: #fff;
-        border: none;
-    }
-    .btn-gradient:hover {
-        background: linear-gradient(90deg, #17a673, #2a99ad);
-        color: #fff;
-    }
-    .form-control-lg {
-        font-size: 1rem;
-        padding: 0.75rem;
-    }
-    .fw-semibold {
-        font-weight: 600;
-    }
-    .fw-bold {
-        font-weight: 700;
-    }
-</style>
-
-=======
         background: linear-gradient(90deg, #007bff, #00c6ff);
         color: #fff;
     }
@@ -158,26 +113,12 @@
     }
 </style>
 
->>>>>>> Stashed changes
 <script>
     const form = document.getElementById('feedback-form');
     const alertBox = document.getElementById('form-alert');
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
-<<<<<<< Updated upstream
-        alertBox.classList.remove('d-none', 'alert-danger', 'alert-success');
-        alertBox.classList.add('alert-primary');
-        alertBox.textContent = 'Submitting...';
-        
-        // Simulate form submission (replace with actual logic)
-        setTimeout(() => {
-            alertBox.classList.remove('alert-primary');
-            alertBox.classList.add('alert-success');
-            alertBox.textContent = 'Thank you for your feedback! We appreciate your input.';
-            form.reset();
-        }, 1000);
-=======
         const formData = new FormData(form);
         alertBox.classList.remove('d-none', 'alert-danger', 'alert-success');
         alertBox.classList.add('alert-primary');
@@ -207,7 +148,6 @@
             alertBox.classList.add('alert-danger');
             alertBox.textContent = 'An error occurred. Please try again later.';
         });
->>>>>>> Stashed changes
     });
 </script>
 {% endblock content %}
