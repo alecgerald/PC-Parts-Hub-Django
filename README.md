@@ -109,26 +109,32 @@ python manage.py runserver
 - ✨ Layout & Design
 - 🛒 Shop Now Button
 - 🖼️ Carousel and Banner Design
+  
 *Cart Page:**
 - 🛍️ View and Modify Cart Items
 - 🧮 Display Total Items and Price
 - 💾 Database Integration
+  
 *Checkout Page:**
 - 📦 Shipping Address Input
 - 🧾 Order Summary
 - 💾 Database Integration
+  
 *Product Page:**
 - 🔍 View Products
 - ➕ Add to Cart
 - 💾 Dynamic Product Initialization from Database
+  
 *My Order Page:**
 - 🛒 View Purchased Items
 - 🔍 Search and Track Items
 
-*Feedback Page:*
+*Feedback Page:**
 - ✍️ Suggestion Input Field
 - 📤 Upload Images or Screenshots
-- 💾 Database Integration*About Us Page:***
+- 💾 Database Integration
+  
+*About Us Page:**
 - 🖼️ Informative Carousel
 - 📍 Location and Content Details
 
