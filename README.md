@@ -134,8 +134,13 @@ python manage.py runserver
 
 This README contains everything you need to set up and contribute to the PC Retail Management System.
 
-Gantt Chart Link: https://docs.google.com/spreadsheets/d/1gpiLcrv6uycD-P3OTyxp3yOcmp6wYUmEqBeeAqgX6Cc/edit?gid=0#gid=0
+## 📑 Documents
 
-ERD Link:
+### ERD
+![ERD](myapp/static/documents/ERD.jpg)
+
+### Gantt Chart
+[Gantt Chart](myapp/static/documents/GanttChart.pdf)
+
 
 🤝 Thank you for being part of our journey. Happy coding! 🚀
