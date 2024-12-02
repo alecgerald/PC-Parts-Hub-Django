@@ -10,22 +10,6 @@ import datetime
 
 from .models import Customer, Order, OrderItem, Product, ShippingAddress, Feedback
 
-
-@receiver(post_save, sender=User)
-def create_customer(sender, instance, created, **kwargs):
-    if created:  # Only create the customer if the user was newly created
-        customer = Customer.objects.create(user=instance)
-        customer.name = instance.username  # Set the name to the username
-        customer.email = instance.email    # Set the email to the user's email
-        customer.save()
-
-@receiver(post_save, sender=User)
-def save_customer(sender, instance, **kwargs):
-    try:
-        instance.customer.save()  # Save the associated customer object
-    except Customer.DoesNotExist:
-        pass  # No action if customer does not exist
-
 def home(request):
     if request.user.is_authenticated:
         # Ensure the customer exists for the logged-in user
@@ -191,7 +175,7 @@ def processOrder(request):
             order.complete = True
             order.save()
 
-        if data['shipping']:  # Check if shipping information exists
+        if data['shipping']:  
             shipping_data = data['shipping']
             shipping_address = ShippingAddress.objects.create(
                 customer=customer,
@@ -219,35 +203,31 @@ def products(request):
         order = {'get_cart_total': 0, 'get_cart_items': 0}
         cartItems = order['get_cart_items']
 
-    # Get the search query from the GET parameters (if any)
     search_query = request.GET.get('search', '')
     if search_query:
-        # Filter products based on the search query (case-insensitive partial match)
         products = Product.objects.filter(name__icontains=search_query)
     else:
-        # If no search query, show all products
         products = Product.objects.all()
 
     context = {
         'products': products,
         'cartItems': cartItems,
-        'search_query': search_query  # Optionally, pass the search query back to the template
+        'search_query': search_query  
     }
     return render(request, 'products.html', context)
 
 
 def product_list(request):
-    search_query = request.GET.get('search', '')  # Get the search query from the URL parameter
+    search_query = request.GET.get('search', '')  
     if search_query:
-        products = Product.objects.filter(name__icontains=search_query)  # Filter products based on the search term
+        products = Product.objects.filter(name__icontains=search_query) 
     else:
-        products = Product.objects.all()  # Show all products if no search query is provided
+        products = Product.objects.all() 
 
     return render(request, 'product_list.html', {'products': products})
 
 def feedback(request):
     if request.method == 'POST':
-        # Process the feedback form
         message = request.POST.get('message', '')
         screenshots = request.FILES.getlist('screenshots')
 
@@ -283,4 +263,17 @@ def feedback(request):
     }
     return render(request, 'feedback.html', context)
 
+@receiver(post_save, sender=User)
+def create_customer(sender, instance, created, **kwargs):
+    if created:  
+        customer = Customer.objects.create(user=instance)
+        customer.name = instance.username 
+        customer.email = instance.email   
+        customer.save()
 
+@receiver(post_save, sender=User)
+def save_customer(sender, instance, **kwargs):
+    try:
+        instance.customer.save()  
+    except Customer.DoesNotExist:
+        pass  
