@@ -143,7 +143,7 @@ This README contains everything you need to set up and contribute to the PC Reta
 ## 📑 Documents
 
 ### ERD
-![ERD](myapp/static/documents/ERD.jpg)
+[ERD](myapp/static/documents/ERD.jpg)
 
 ### Gantt Chart
 [Gantt Chart](myapp/static/documents/GanttChart.pdf)
