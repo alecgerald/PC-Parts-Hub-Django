@@ -246,18 +246,41 @@ def product_list(request):
     return render(request, 'product_list.html', {'products': products})
 
 def feedback(request):
+    if request.method == 'POST':
+        # Process the feedback form
+        message = request.POST.get('message', '')
+        screenshots = request.FILES.getlist('screenshots')
+
+        if message:  # Ensure the message is provided
+            if request.user.is_authenticated:
+                customer = request.user.customer  # Get the logged-in customer's instance
+                feedback = Feedback.objects.create(
+                    customer=customer,
+                    message=message,
+                )
+                # Save each uploaded screenshot
+                for file in screenshots:
+                    feedback.screenshots.save(file.name, file, save=True)
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'User not authenticated.'})
+        else:
+            return JsonResponse({'success': False, 'error': 'Message is required.'})
+
+    # For GET request, render the feedback form
     if request.user.is_authenticated:
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        cartItems = order.get_cart_items  # Get the cart item count
-        items = order.orderitem_set.all()  # Get all the items in the cart
+        cartItems = order.get_cart_items
+        items = order.orderitem_set.all()
     else:
-        cartItems = 0  # If the user is not authenticated
+        cartItems = 0
         items = []
 
     context = {
         'cartItems': cartItems,
-        'items': items  # Pass cart items to the template
+        'items': items
     }
     return render(request, 'feedback.html', context)
+
 

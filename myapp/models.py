@@ -28,21 +28,18 @@ class Product(models.Model):
         return url
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # Save the product instance first
+        super().save(*args, **kwargs)  
 
-        if self.image:  # Check if an image is uploaded
-            img = Image.open(self.image.path)  # Open the image using Pillow
+        if self.image: 
+            img = Image.open(self.image.path)  
 
-            # Resize the image
             img = img.resize((300, 300), Image.Resampling.LANCZOS)
 
-            # If the image is in "P" mode, convert it to "RGB" (JPEG format compatible)
             if img.mode != 'RGB':
                 img = img.convert('RGB')
 
-            # Save the resized and converted image back to the same path
-            img.save(self.image.path, 'JPEG')  # Ensure saving as JPEG
-    
+            img.save(self.image.path, 'JPEG')  
+
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     date_oredered = models.DateTimeField(auto_now_add=True)
@@ -58,14 +55,12 @@ class Order(models.Model):
         orderitems = self.orderitem_set.all()
         return shipping
     
-    #Calculate Total Price for Items
     @property
     def get_cart_total(self):
         orderitems = self.orderitem_set.all()
         total = sum([item.get_total for item in orderitems])
         return total
     
-     #Calculate Total Quantity for Items
     @property
     def get_cart_items(self):
         orderitems = self.orderitem_set.all()
@@ -78,7 +73,6 @@ class OrderItem(models.Model):
     quantity = models.IntegerField(default = 0, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
 
-    # Calculate total price of items
     @property
     def get_total(self):
         total = self.product.price * self.quantity
