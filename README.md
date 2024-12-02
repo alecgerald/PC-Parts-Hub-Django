@@ -31,7 +31,7 @@ It enables customers to browse, add products to their cart, and place orders whi
 ## 🚀 Run Locally  
 
 ### 1️⃣ Download the Project  
-- Download the lms.zip file and extract it.  
+- Download the zip file and extract it.  
 
 ### 2️⃣ Set Up Virtual Environment  
 #### 💻 Windows  
