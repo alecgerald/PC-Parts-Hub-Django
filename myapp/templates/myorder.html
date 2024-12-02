@@ -9,8 +9,9 @@
         {% for order in orders %}
         <div class="card mb-3">
             <div class="card-header" style="background-color: #2f27ce; color: white;">
-                <strong>Order ID:</strong> {{ order.id }} | 
-                <strong>Date:</strong> {{ order.date_ordered|date:"D M d, Y" }}
+                <strong>Order ID:</strong> {{ order.id }} |
+                <strong>Transaction ID:</strong> {{ order.transaction_id }} | 
+                <strong>Date Ordered:</strong> {{ order.date_ordered|date:"D M d, Y" }}
             </div>
             <div class="card-body">
                 <p><strong>Total Items:</strong> {{ order.get_cart_items }}</p>
